@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form and Table</title>
+    <style>
+      body {
+        margin: 20px;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .f-container {
+        margin-bottom: 20px;
+        width: 50%;
+        min-width: 300px;
+        max-width: 500px;
+        background-color: #f9f9f9;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .f-container form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .f-container label {
+        font-weight: 500;
+        margin-bottom: 5px;
+      }
+      .f-container input {
+        padding: 8px;
+      }
+      .f-container div {
+        display: flex;
+        flex-direction: column;
+      }
+      .sbt-btn {
+        background-color: #002856;
+        padding: 10px;
+        color: #fff;
+        border: none;
+      }
+      .table-container {
+        margin-top: 20px;
+        width: 90%;
+        max-width: 1000px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f4f4f4;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .actions button {
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+
+      .icon-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .icon-button img {
+        width: 20px;
+        height: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="f-container">
+      <form id="dataForm">
+        <div>
+          <label for="name" class="f-label">Name:</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div>
+          <label for="email" class="f-label">Email:</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div>
+          <label for="phone" class="f-label">Phone:</label>
+          <input type="phone" id="phone" name="phone" required />
+        </div>
+        <div>
+          <label for="qualification" class="f-label">Qualification:</label>
+          <input type="text" id="qualification" name="qualification" required />
+        </div>
+        <div>
+          <label for="hometown" class="f-label">HomeTown:</label>
+          <input type="text" id="hometown" name="hometown" required />
+        </div>
+        <button type="submit" class="sbt-btn">Submit</button>
+      </form>
+    </div>
+
+    <div class="table-container">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Qualification</th>
+            <th>HomeTown</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <script>
+      const form = document.getElementById("dataForm");
+      const tableBody = document
+        .getElementById("dataTable")
+        .querySelector("tbody");
+      let editTargetRow = null;
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const phone = document.getElementById("phone").value;
+        const qualification = document.getElementById("qualification").value;
+        const hometown = document.getElementById("hometown").value;
+
+        if (editTargetRow) {
+          editTargetRow.cells[0].innerText = name;
+          editTargetRow.cells[1].innerText = email;
+          editTargetRow.cells[2].innerText = phone;
+          editTargetRow.cells[3].innerText = qualification;
+          editTargetRow.cells[4].innerText = hometown;
+          editTargetRow = null;
+        } else {
+          const newRow = document.createElement("tr");
+
+          newRow.innerHTML = `
+                    <td>${name}</td>
+                    <td>${email}</td>
+                    <td>${phone}</td>
+                    <td>${qualification}</td>
+                    <td>${hometown}</td>
+                    <td class="actions">
+                        <button class="icon-button" onclick="editRow(this)">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1827/1827933.png" alt="Edit">
+                        </button>
+                        <button class="icon-button" onclick="deleteRow(this)">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" alt="Delete">
+                        </button>
+                    </td>
+                `;
+
+          tableBody.appendChild(newRow);
+        }
+
+        form.reset();
+      });
+
+      function deleteRow(button) {
+        const row = button.closest("tr");
+        row.remove();
+      }
+
+      function editRow(button) {
+        const row = button.closest("tr");
+        const cells = row.querySelectorAll("td");
+
+        document.getElementById("name").value = cells[0].innerText;
+        document.getElementById("email").value = cells[1].innerText;
+        document.getElementById("phone").value = cells[2].innerText;
+        document.getElementById("qualification").value = cells[3].innerText;
+        document.getElementById("hometown").value = cells[4].innerText;
+
+        editTargetRow = row;
+      }
+    </script>
+  </body>
+</html>
