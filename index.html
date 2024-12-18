@@ -144,6 +144,9 @@
         .querySelector("tbody");
       let editTargetRow = null;
 
+      // Load table data from localStorage on page load
+      document.addEventListener("DOMContentLoaded", loadTableData);
+
       form.addEventListener("submit", function (event) {
         event.preventDefault();
 
@@ -154,13 +157,16 @@
         const hometown = document.getElementById("hometown").value;
 
         if (editTargetRow) {
+          // Update row data
           editTargetRow.cells[0].innerText = name;
           editTargetRow.cells[1].innerText = email;
           editTargetRow.cells[2].innerText = phone;
           editTargetRow.cells[3].innerText = qualification;
           editTargetRow.cells[4].innerText = hometown;
+
           editTargetRow = null;
         } else {
+          // Create new row
           const newRow = document.createElement("tr");
 
           newRow.innerHTML = `
@@ -182,12 +188,17 @@
           tableBody.appendChild(newRow);
         }
 
+        // Save updated table data to localStorage
+        saveTableData();
+
+        // Reset form
         form.reset();
       });
 
       function deleteRow(button) {
         const row = button.closest("tr");
         row.remove();
+        saveTableData(); // Save table data after deletion
       }
 
       function editRow(button) {
@@ -201,6 +212,47 @@
         document.getElementById("hometown").value = cells[4].innerText;
 
         editTargetRow = row;
+      }
+
+      function saveTableData() {
+        const tableRows = Array.from(tableBody.querySelectorAll("tr"));
+        const tableData = tableRows.map((row) => {
+          const cells = row.querySelectorAll("td");
+          return {
+            name: cells[0].innerText,
+            email: cells[1].innerText,
+            phone: cells[2].innerText,
+            qualification: cells[3].innerText,
+            hometown: cells[4].innerText,
+          };
+        });
+        localStorage.setItem("tableData", JSON.stringify(tableData));
+      }
+
+      function loadTableData() {
+        const storedData = localStorage.getItem("tableData");
+        if (storedData) {
+          const tableData = JSON.parse(storedData);
+          tableData.forEach((data) => {
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                        <td>${data.name}</td>
+                        <td>${data.email}</td>
+                        <td>${data.phone}</td>
+                        <td>${data.qualification}</td>
+                        <td>${data.hometown}</td>
+                        <td class="actions">
+                            <button class="icon-button" onclick="editRow(this)">
+                                <img src="https://cdn-icons-png.flaticon.com/512/1827/1827933.png" alt="Edit">
+                            </button>
+                            <button class="icon-button" onclick="deleteRow(this)">
+                                <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" alt="Delete">
+                            </button>
+                        </td>
+                    `;
+            tableBody.appendChild(newRow);
+          });
+        }
       }
     </script>
   </body>
